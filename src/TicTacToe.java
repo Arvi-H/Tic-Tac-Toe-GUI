@@ -4,11 +4,11 @@ import java.awt.*;
 
 public class TicTacToe extends JFrame {
 
-    private static JFrame frame;
-    private static JPanel panel;
-    private static JButton board[][];
-    private static final String emptyBoard = "";
-    private static String turn = "X ";
+    private JFrame frame;
+    private JPanel panel;
+    private JButton board[][];
+    private final String emptyBoard = "";
+    private String turn = "X ";
 
     public TicTacToe() {
         GUI_config();
@@ -21,7 +21,7 @@ public class TicTacToe extends JFrame {
     private void GUI_config() {
         frame = new JFrame("Tic Tac Toe");
         panel = new JPanel();
-        frame.setSize(300, 390);
+        frame.setSize(300, 400);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.add(panel);
         frame.setLocationRelativeTo(null);
@@ -36,24 +36,26 @@ public class TicTacToe extends JFrame {
         for(int i = 0; i < board.length; i++ ) {
             for(int j = 0; j < board.length; j++) {
                 board[i][j] = new JButton(emptyBoard);
-                board[i][j].addActionListener(e -> {
-                    JButton currentSpace = (JButton) e.getSource();
-                    if ((currentSpace.getText().equals(emptyBoard)) && !checkWinner()) {
-                        currentSpace.setText(turn);
-                        switchPlayers();
-                        if (checkWinner()) gameEnded("Game Over");
-                    }
-                });
+
+                    board[i][j].addActionListener(e -> {
+                        JButton currentSpace = (JButton) e.getSource();
+                        if ((currentSpace.getText().equals(emptyBoard)) && !checkForWinner()) {
+                            currentSpace.setText(turn);
+                        if (checkForWinner()) gameEndedMsg("Game Over. Player " + turn + " won.");
+                            checkForDraw();
+                            switchPlayers();
+                        }});
+
                 panel.add(board[i][j]);
             }
         }
     }
 
-    private void gameEnded(String msg) {
+    private void gameEndedMsg(String msg) {
         JOptionPane.showMessageDialog(null, msg);
     }
 
-    private boolean checkWinner() {
+    private boolean checkForWinner() {
         if (verifyWinner(0,0,0,1) && verifyWinner(0,0,0,2) && boardChecker(0,1)) return true;
         else if (verifyWinner(1,0,1,1) && verifyWinner(1,0,1,2) && boardChecker(1,0)) return true;
         else if (verifyWinner(2,0,2,1) && verifyWinner(2,0,2,2) && boardChecker(2,0)) return true;
@@ -62,8 +64,19 @@ public class TicTacToe extends JFrame {
         else if (verifyWinner(0,2,1,2) && verifyWinner(0,2,2,2) && boardChecker(0,2)) return true;
         else if (verifyWinner(0,0,1,1) && verifyWinner(0,0,2,2) && boardChecker(0,0)) return true;
         else if (verifyWinner(2,0,2,1) && verifyWinner(2,0,0,2) && boardChecker(2,0)) return true;
-        else
-            return false;
+        else return false;
+    }
+
+    private boolean checkForDraw() {
+        for (int i = 0; i < board.length ; i++) {
+            for (int j = 0; j < board.length ; j++) {
+                if (board[i][j].getText().equals(emptyBoard)) {
+                    return false;
+                }
+            }
+        }
+        gameEndedMsg("Game Over. It's a draw.");
+        return true;
     }
 
     private boolean boardChecker(int i, int j) {
